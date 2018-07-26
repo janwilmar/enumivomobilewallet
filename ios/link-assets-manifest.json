@@ -1,0 +1,73 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/asset-manifest.json",
+      "sha1": "52301299639acf7fa7cc2e51524ef86f599ed887"
+    },
+    {
+      "path": "assets/favicon.ico",
+      "sha1": "1120538c77ad1f28a89243b4b53fe2ac16cc3bc6"
+    },
+    {
+      "path": "assets/index.html",
+      "sha1": "6cf1fd80ba88c76573efb0fc2ad43047e1cf00b9"
+    },
+    {
+      "path": "assets/manifest.json",
+      "sha1": "21c42782b633240e91fe0016e7eccccae7312ac2"
+    },
+    {
+      "path": "assets/service-worker.js",
+      "sha1": "83d090e9077565dc28bddf58fcb4080d9dcd3037"
+    },
+    {
+      "path": "assets/static/css/main.39844fa6.css",
+      "sha1": "fcb96b8797f4faee6938ec1711c23751ba6c04dd"
+    },
+    {
+      "path": "assets/static/css/main.39844fa6.css.map",
+      "sha1": "4540baffe33f7b89e74544dd4d34c6194ee3f03e"
+    },
+    {
+      "path": "assets/static/js/main.6e1d1f5c.js",
+      "sha1": "cc889554f667e8a3d6cc8800d37fc9644722c33b"
+    },
+    {
+      "path": "assets/static/js/main.6e1d1f5c.js.map",
+      "sha1": "d30b66b552c05b9cb1fd74e3477b4c357e1f12db"
+    },
+    {
+      "path": "assets/static/css/main.39844fa6.css",
+      "sha1": "fcb96b8797f4faee6938ec1711c23751ba6c04dd"
+    },
+    {
+      "path": "assets/static/css/main.39844fa6.css.map",
+      "sha1": "4540baffe33f7b89e74544dd4d34c6194ee3f03e"
+    },
+    {
+      "path": "assets/static/js/main.6e1d1f5c.js",
+      "sha1": "cc889554f667e8a3d6cc8800d37fc9644722c33b"
+    },
+    {
+      "path": "assets/static/js/main.6e1d1f5c.js.map",
+      "sha1": "d30b66b552c05b9cb1fd74e3477b4c357e1f12db"
+    },
+    {
+      "path": "assets/static/js/main.6e1d1f5c.js",
+      "sha1": "cc889554f667e8a3d6cc8800d37fc9644722c33b"
+    },
+    {
+      "path": "assets/static/js/main.6e1d1f5c.js.map",
+      "sha1": "d30b66b552c05b9cb1fd74e3477b4c357e1f12db"
+    },
+    {
+      "path": "assets/static/css/main.39844fa6.css",
+      "sha1": "fcb96b8797f4faee6938ec1711c23751ba6c04dd"
+    },
+    {
+      "path": "assets/static/css/main.39844fa6.css.map",
+      "sha1": "4540baffe33f7b89e74544dd4d34c6194ee3f03e"
+    }
+  ]
+}
