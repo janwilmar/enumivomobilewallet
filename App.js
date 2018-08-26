@@ -16,35 +16,16 @@ export default class App extends Component<Props> {
     this.state = {
       myKey: null,
       keypairs: [],
+      customtokens: [],
       keypairinuse: "",
+      languageinuse: 0
     }
     this.webView = null;
 
     this.getKeyPairs();
     this.getInuseKeyPair();
-    // this.gitkis();
-  }
-
-  gitkis() {
-    this.getAllKeys();
-    // this.removeAllKeys();
-  }
-
-  async getAllKeys() {
-    try {
-      const values = await AsyncStorage.getAllKeys();
-      console.log(values);
-    } catch (error) {
-      console.log("all keys" + error);
-    }
-  }
-
-  async removeAllKeys() {
-    try {
-      await AsyncStorage.clear();
-    } catch (error) {
-      console.log("remove allkeys" + error);
-    }
+    this.getCustomTokens();
+    this.getLanguage();
   }
 
   async saveInuseKeyPair(data) {
@@ -57,8 +38,8 @@ export default class App extends Component<Props> {
           this.webView.postMessage(JSON.stringify({
             type: "key_pair_inuse", content: this.state.keypairinuse
           }));
-        });;
-      })
+        });
+      });
     } catch (error) {
       console.log("Error saving data" + error);
     }
@@ -165,8 +146,106 @@ export default class App extends Component<Props> {
     }
   }
 
+  async getCustomTokens() {
+    try {
+      AsyncStorage.getAllKeys((err, keys) => {
+        const keysFiltered = keys.filter(e => e.indexOf(':token') !== -1);
+        AsyncStorage.multiGet(keysFiltered, (err, stores) => {
+          let tmpStores = [];
+          stores.map((result, i, store) => {
+            let key = store[i][0];
+            let value = store[i][1];
+            value = JSON.parse(value);
+            tmpStores.push({ contract: value.contract, symbol: value.symbol, currency: value.currency });
+          });
+          this.setState({ customtokens: tmpStores });
+        });
+      });
+    } catch (error) {
+      console.log("Error retrieving data" + error);
+    }
+  }
+
+  async saveCustomToken(token) {
+    const tokenName = `@${token.contract}${token.symbol}:token`;
+    try {
+      AsyncStorage.setItem(tokenName, JSON.stringify(token), () => {
+        AsyncStorage.getAllKeys((err, keys) => {
+          const keysFiltered = keys.filter(e => e.indexOf(':token') !== -1);
+          AsyncStorage.multiGet(keysFiltered, (err, stores) => {
+            let tmpStores = [];
+            stores.map((result, i, store) => {
+              let key = store[i][0];
+              let value = store[i][1];
+              value = JSON.parse(value);
+              tmpStores.push({ contract: value.contract, symbol: value.symbol, currency: value.currency });
+            });
+            this.setState({ customtokens: tmpStores });
+          }).then(() => {
+            this.webView.postMessage(JSON.stringify({
+              type: "list_custom_tokens", content: this.state.customtokens
+            }));
+          });
+        });
+      });
+    } catch (error) {
+      console.log("Error saving data" + error);
+    }
+  }
+
+  async removeCustomToken(token) {
+    const tokenName = `@${token.contract}${token.symbol}:token`;
+    try {
+      AsyncStorage.removeItem(tokenName, () => {
+        AsyncStorage.getAllKeys((err, keys) => {
+          const keysFiltered = keys.filter(e => e.indexOf(':token') !== -1);
+          AsyncStorage.multiGet(keysFiltered, (err, stores) => {
+            let tmpStores = [];
+            stores.map((result, i, store) => {
+              let key = store[i][0];
+              let value = store[i][1];
+              value = JSON.parse(value);
+              tmpStores.push({ contract: value.contract, symbol: value.symbol, currency: value.currency });
+            });
+            this.setState({ customtokens: tmpStores });
+          }).then(() => {
+            this.webView.postMessage(JSON.stringify({
+              type: "list_custom_tokens", content: this.state.customtokens
+            }));
+          });
+        });
+      });
+    } catch (error) {
+      console.log("Error retrieving data" + error);
+    }
+  }
+
+  async saveLanguage(content) {
+    try {
+      AsyncStorage.setItem('@Language:inuse', String(content.language), () => {
+        AsyncStorage.getItem('@Language:inuse', (value) => {
+          this.setState({ languageinuse: content.language });
+        }).then(() => {
+          this.webView.postMessage(JSON.stringify({
+            type: "language_inuse", content: this.state.languageinuse
+          }));
+        });
+      });
+    } catch (error) {
+      console.log("Error saving data " + error);
+    }
+  }
+  
+  async getLanguage() {
+    try {
+      const value = await AsyncStorage.getItem('@Language:inuse');
+      this.setState({ languageinuse: value });
+    } catch (error) {
+      console.log("Error retrieving data" + error);
+    }
+  }
+
   onMessage = (event) => {
-    // console.log(event.nativeEvent.data);
     const data = JSON.parse(event.nativeEvent.data);
 
     switch (data.type) {
@@ -178,6 +257,15 @@ export default class App extends Component<Props> {
         break;
       case "remove_key_pair":
         this.removeKeyPair(data.content);
+        break;
+      case "save_custom_token":
+        this.saveCustomToken(data.content);
+        break;
+      case "remove_custom_token":
+        this.removeCustomToken(data.content);
+        break;
+      case "inuse_language":
+        this.saveLanguage(data.content);
         break;
       default:
         console.log("not in choices");
@@ -192,10 +280,12 @@ export default class App extends Component<Props> {
     this.webView.postMessage(JSON.stringify({
       type: "key_pair_inuse", content: this.state.keypairinuse
     }));
-
-    setTimeout(() => {
-      this.sendData();
-    }, 1000);
+    this.webView.postMessage(JSON.stringify({
+      type: "list_custom_tokens", content: this.state.customtokens
+    }));
+    this.webView.postMessage(JSON.stringify({
+      type: "language_inuse", content: this.state.languageinuse
+    }));
   }
 
   onLoadPrivateKey = () => {
@@ -206,8 +296,7 @@ export default class App extends Component<Props> {
     return (
       <WebView
         style={{ flex: 1 }}
-        source={require("./assets/index.html")}
-        // source={{ uri: "http://10.0.3.2:3000" }}
+        source={{ uri: "file:///android_asset/index.html" }}
         onMessage={(e) => { this.onMessage(e) }}
         ref={(webView) => this.webView = webView}
         onLoad={() => { this.onLoadPrivateKey() }}
